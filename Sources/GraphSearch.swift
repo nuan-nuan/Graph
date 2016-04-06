@@ -60,19 +60,23 @@ public extension Graph {
 		
 		if toFilter {
 			var seen: Dictionary<String, Bool> = Dictionary<String, Bool>()
-			for var i: Int = nodes.count - 1; 0 <= i; --i {
+			var i: Int = nodes.count - 1
+			while 0 <= i {
 				if let v: ManagedEntity = nodes[i] as? ManagedEntity {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Entity(object: v)
+						i -= 1
 						continue
 					}
-				} else if let v: ManagedEntity = context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedEntity {
+				} else if let v: ManagedEntity = Graph.context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedEntity {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Entity(object: v)
+						i -= 1
 						continue
 					}
 				}
 				nodes.removeAtIndex(i)
+				i -= 1
 			}
 			return nodes as! Array<Entity>
 		} else {
@@ -80,7 +84,7 @@ public extension Graph {
 				if let v: ManagedEntity = $0 as? ManagedEntity {
 					return Entity(object: v)
 				}
-				return Entity(object: context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedEntity)
+				return Entity(object: Graph.context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedEntity)
 			} as Array<Entity>
 		}
 	}
@@ -114,19 +118,23 @@ public extension Graph {
 		
 		if toFilter {
 			var seen: Dictionary<String, Bool> = Dictionary<String, Bool>()
-			for var i: Int = nodes.count - 1; 0 <= i; --i {
+			var i: Int = nodes.count - 1
+			while 0 <= i {
 				if let v: ManagedRelationship = nodes[i] as? ManagedRelationship {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Relationship(object: v)
+						i -= 1
 						continue
 					}
-				} else if let v: ManagedRelationship = context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedRelationship {
+				} else if let v: ManagedRelationship = Graph.context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedRelationship {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Relationship(object: v)
+						i -= 1
 						continue
 					}
 				}
 				nodes.removeAtIndex(i)
+				i -= 1
 			}
 			return nodes as! Array<Relationship>
 		} else {
@@ -134,7 +142,7 @@ public extension Graph {
 				if let v: ManagedRelationship = $0 as? ManagedRelationship {
 					return Relationship(object: v)
 				}
-				return Relationship(object: context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedRelationship)
+				return Relationship(object: Graph.context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedRelationship)
 			} as Array<Relationship>
 		}
 	}
@@ -168,19 +176,23 @@ public extension Graph {
 		
 		if toFilter {
 			var seen: Dictionary<String, Bool> = Dictionary<String, Bool>()
-			for var i: Int = nodes.count - 1; 0 <= i; --i {
+			var i: Int = nodes.count - 1
+			while 0 <= i {
 				if let v: ManagedAction = nodes[i] as? ManagedAction {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Action(object: v)
+						i -= 1
 						continue
 					}
-				} else if let v: ManagedAction = context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedAction {
+				} else if let v: ManagedAction = Graph.context!.objectWithID(nodes[i]["node"]! as! NSManagedObjectID) as? ManagedAction {
 					if nil == seen.updateValue(true, forKey: v.id) {
 						nodes[i] = Action(object: v)
+						i -= 1
 						continue
 					}
 				}
 				nodes.removeAtIndex(i)
+				i -= 1
 			}
 			return nodes as! Array<Action>
 		} else {
@@ -188,7 +200,7 @@ public extension Graph {
 				if let v: ManagedAction = $0 as? ManagedAction {
 					return Action(object: v)
 				}
-				return Action(object: context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedAction)
+				return Action(object: Graph.context!.objectWithID($0["node"]! as! NSManagedObjectID) as! ManagedAction)
 			} as Array<Action>
 		}
 	}
@@ -200,7 +212,7 @@ public extension Graph {
 			typesPredicate.append(NSPredicate(format: "type LIKE[cd] %@", v))
 		}
 		
-		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(typeDescriptionName, inManagedObjectContext: context!)!
+		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(typeDescriptionName, inManagedObjectContext: Graph.context!)!
 		let request: NSFetchRequest = NSFetchRequest()
 		request.entity = entityDescription
 		request.fetchBatchSize = batchSize
@@ -208,7 +220,7 @@ public extension Graph {
 		request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: typesPredicate)
 		request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: true)]
 		
-		return try? context!.executeFetchRequest(request)
+		return try? Graph.context!.executeFetchRequest(request)
 	}
 	
 	internal func search(groupDescriptionName: String, groups: Array<String>) -> Array<AnyObject>? {
@@ -218,7 +230,7 @@ public extension Graph {
 			groupsPredicate.append(NSPredicate(format: "name LIKE[cd] %@", v))
 		}
 		
-		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(groupDescriptionName, inManagedObjectContext: context!)!
+		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(groupDescriptionName, inManagedObjectContext: Graph.context!)!
 		let request: NSFetchRequest = NSFetchRequest()
 		request.entity = entityDescription
 		request.fetchBatchSize = batchSize
@@ -229,7 +241,7 @@ public extension Graph {
 		request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: groupsPredicate)
 		request.sortDescriptors = [NSSortDescriptor(key: "node.createdDate", ascending: true)]
 		
-		return try? context!.executeFetchRequest(request)
+		return try? Graph.context!.executeFetchRequest(request)
 	}
 	
 	internal func search(propertyDescriptionName: String, properties: Array<(key: String, value: AnyObject?)>) -> Array<AnyObject>? {
@@ -247,7 +259,7 @@ public extension Graph {
 			}
 		}
 		
-		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(propertyDescriptionName, inManagedObjectContext: context!)!
+		let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(propertyDescriptionName, inManagedObjectContext: Graph.context!)!
 		let request: NSFetchRequest = NSFetchRequest()
 		request.entity = entityDescription
 		request.fetchBatchSize = batchSize
@@ -258,6 +270,6 @@ public extension Graph {
 		request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: propertiesPredicate)
 		request.sortDescriptors = [NSSortDescriptor(key: "node.createdDate", ascending: true)]
 		
-		return try? context!.executeFetchRequest(request)
+		return try? Graph.context!.executeFetchRequest(request)
 	}
 }
